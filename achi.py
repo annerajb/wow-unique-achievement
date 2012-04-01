@@ -2,9 +2,8 @@
 import json
 import urllib2
 import itertools
-
 from pprint import pprint
-proxies = {'http': 'http://web-proxy.fc.hp.com.com:8080'}
+
 base_url = 'http://us.battle.net/api/wow/character/'
 characters = [
                 ['kirin%20tor','annerajb'],
