@@ -6,18 +6,30 @@ import itertools
 from pprint import pprint
 proxies = {'http': 'http://web-proxy.fc.hp.com.com:8080'}
 base_url = 'http://us.battle.net/api/wow/character/'
-characters = [['kirin%20tor','annerajb'],['sen\'jin','annerajb'],['sen\'jin','annerajbdk'],['sen\'jin','annerajbpaly'],['sen\'jin','annerajbd'],['sen\'jin','annerajbbank']]
+characters = [
+                ['kirin%20tor','annerajb'],
+                ['sen\'jin','annerajb'],
+                ['sen\'jin','annerajbdk'],
+                ['sen\'jin','annerajbpaly'],
+                ['sen\'jin','annerajbd'],
+                ['sen\'jin','annerajbbank']
+            ]
 earned = []
 achievements = {}
 titles = []
+points = 0
 def iterate_tree(tree,earned):
     for achi_category in tree:
             #add the achievement to a dictionary with the key as the id
+            #
             if achi_category['id'] not in earned:
                 #dont add the achievement if we have a achievement title with it's name
                 if achi_category['title'] not in titles:
                     titles.append(achi_category['title']);
                     achievements[achi_category['id']] = achi_category;
+                    global points
+                    points += achi_category['points']
+                    #pprint(achi_category)
 if __name__=="__main__":
     #merge all characters data
     for char_file in characters:
@@ -45,4 +57,5 @@ if __name__=="__main__":
         iterate_tree(categories['achievements'],earned)
     pprint(achievements)
     print len(achievements)
+    print points
 
