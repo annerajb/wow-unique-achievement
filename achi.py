@@ -56,6 +56,7 @@ def iterate_tree(subcategory,tree,earned):
     
     subcategory['achievements'] = temp_list
     #subcategory.append(temp_list)
+achievements = []
 if __name__=="__main__":
     #merge all characters data
     fetcher = DiskCacheFetcher('/')
@@ -74,7 +75,7 @@ if __name__=="__main__":
     achi_filename = open("achievements.json")
     achi_tree = json.load(achi_filename)
     achi_filename.close()
-    achievement_tree = {}
+    achievement_tree = []
     for main_categories in achi_tree['achievements']:
         #skip feast of strenght
         if main_categories['id'] == 81:
@@ -83,16 +84,16 @@ if __name__=="__main__":
         #do we have a subcategory like quests -> eastern kingdom
         if 'categories' in main_categories:
             #loop thru all sub and add to main
+            subcategory_list = [];
             for achi_under_category in main_categories['categories']:
                 subcategory = {'name': achi_under_category['name'], 'id': achi_under_category['id']}
                 iterate_tree(subcategory,achi_under_category['achievements'],earned)
-                #pprint(subcategory)
-                main_category['achievements'] = subcategory
-                
+                subcategory_list.append(subcategory)
+            main_category['categories'] = subcategory_list
         iterate_tree(main_category,main_categories['achievements'],earned)
-        pprint(main_category)
-        #achievement_tree.append(main_category)
-    #pprint(achievements)
-    #print len(achievements)
+        achievement_tree.append(main_category)
+    #achi_tree_pair = {'achievements':achievement_tree}
+    #achievements.append(achi_tree_pair)
+    pprint(achievement_tree)
     print points
 
