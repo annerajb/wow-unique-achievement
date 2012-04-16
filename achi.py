@@ -111,8 +111,25 @@ achi_duplicates = [
     [5823,5824],
     [5329,5326],
     [5330,5345],
+    [5321,5321],
     [5331,5346],
+    [4869,4982],
+    [5481,5482],
+    [4983,4875],
     [5332,5347],
+    [33,1358],
+    [34,1356],
+    [35,1359],
+    [37,1357],
+    [41,1360],
+    [4981,4937],
+    [4936,4980],
+    [4978,4929],
+    [4932,4979],
+    [1680,1678],
+    [1274,1262],
+    [5501,4873],
+    [5319,5318],
     [5333,5348],
     [5334,5349],
     [5335,5350],
@@ -209,11 +226,12 @@ if __name__=="__main__":
         jdata = json.load(data)
         data.close()
         earned += jdata['achievements']['achievementsCompleted']
-        earned += jdata['achievements']['criteria']
+        #earned += jdata['achievements']['criteria']
     earned = list(set(earned))
     earned.sort()
     print "Finished feshing achievements from battle.net"
     print "Found %d achievement id's" % len(earned)
+    
     AddDuplicates()
     #flatten the achievements into a single dictionary by id
     achi_filename = open("achievements.json")
