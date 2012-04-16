@@ -226,7 +226,6 @@ if __name__=="__main__":
         jdata = json.load(data)
         data.close()
         earned += jdata['achievements']['achievementsCompleted']
-        #earned += jdata['achievements']['criteria']
     earned = list(set(earned))
     earned.sort()
     print "Finished feshing achievements from battle.net"
@@ -254,8 +253,6 @@ if __name__=="__main__":
             main_category['categories'] = subcategory_list
         iterate_tree(main_category,main_categories['achievements'],earned)
         achievement_tree.append(main_category)
-    #achi_tree_pair = {'achievements':achievement_tree}
-    #achievements.append(achi_tree_pair)
     pprint(achievement_tree)
-    print "Account Wide Points: %d" % points
+    print "Account Wide Points Missing: %d" % points
 
