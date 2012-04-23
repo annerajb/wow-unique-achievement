@@ -28,7 +28,6 @@ class DiskCacheFetcher:
         os.rename(temppath, filepath)
         return data
         
-        
 base_url = 'http://us.battle.net/api/wow/character/'
 characters = [
                 ['kirin%20tor','annerajb'],
@@ -111,12 +110,17 @@ achi_duplicates = [
     [5823,5824],
     [5329,5326],
     [5330,5345],
-    [5321,5321],
+    [5321,5320],
+    [1189,1271],
+    [1192,1191],
     [5331,5346],
     [4869,4982],
     [5481,5482],
     [4983,4875],
+    [4894,4907],
     [5332,5347],
+    [4895,4899],
+    [4933,4902],
     [33,1358],
     [34,1356],
     [35,1359],
@@ -148,9 +152,15 @@ achi_duplicates = [
     [1683,1684],
     [1656,1657],
     [3478,3656],
+    [5454,5453],
     [1691,1692],
     [2144,2145],
     [1279,1280],
+    [4976,4925],
+    [1676,1677],
+    [4927,4926],
+    [4908,4928],
+    [1698,1697],
     [2419,2497],
     [2420,2421],
     [1037,1035],
@@ -198,45 +208,81 @@ achi_duplicates = [
     [6030,6031],
     [1682,1681]
 ]
+tally_up = []
 titles = []
+points_left = 0
 points = 0
-def AddDuplicates():
+def AddDuplicateAchievements(achi_list):
     for  item in achi_duplicates:
-        earned.append(item[0])
-        
-
+        if item[0] in achi_list:
+            achi_list.append(item[1])
+        else:
+            achi_list.append(item[0])
+    return achi_list
+def HasDuplicates(id):
+    if id in tally_up:
+        return True
+    return False
 def iterate_tree(subcategory,tree,earned):
     temp_list = []
     for achi_category in tree:
+            
             if achi_category['id'] not in earned:
                 temp_list.append(achi_category)
-                global points
-                points += achi_category['points']
+                global points_left
+                points_left += achi_category['points']
+            else:
+                #we have this achievement
+                if  achi_category['id'] not in tally_up:
+                    global points
+                    #if not HasDuplicates(achi_category['id']):
+                    tally_up.append(achi_category['id'])
+                    points += achi_category['points']
     subcategory['achievements'] = temp_list
     
 achievements = []
-if __name__=="__main__":
-    #merge all characters data
-    fetcher = DiskCacheFetcher('/')
+def GetCharacter(field):
     print "Fetching achievements from battle.net"
+    temp_array = []
     for char_file in characters:
-        char_url = base_url + char_file[0]+'/'+char_file[1]+'?fields=achievements'
+        char_url = base_url + char_file[0]+'/'+char_file[1]+'?fields='+field
         #data = fetcher.fetch(char_url,60);
         data = urllib2.urlopen(char_url)
         jdata = json.load(data)
         data.close()
-        earned += jdata['achievements']['achievementsCompleted']
-    earned = list(set(earned))
-    earned.sort()
-    print "Finished feshing achievements from battle.net"
-    print "Found %d achievement id's" % len(earned)
+        
+        if 'achievements' == field:
+            temp_array += jdata['achievements']['achievementsCompleted']
+        elif 'mounts' == field:
+            temp_array += jdata['mounts']
+    temp_array = list(set(temp_array))
+    temp_array.sort()
+    print "Finished fetching achievements from battle.net"
+    return temp_array
+if __name__=="__main__":
+    #merge all characters data
+    #fetcher = DiskCacheFetcher('/')
     
-    AddDuplicates()
-    #flatten the achievements into a single dictionary by id
+    earned = GetCharacter("achievements")
+    
+    print "Found %d achievement id's" % len(earned)
+    earned = AddDuplicateAchievements(earned)
+    #mounts_earned = GetCharacter("mounts")
+    #print "Found %d mounts id's" % len(mounts_earned)
+    
+    #mounts webpage
+    #with open("mounts.html", 'w') as web_file:
+#        web_file = open('mounts.html','w')
+        #web_file.write('<html><head></head><script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script>')
+        #for mount in mounts_earned:
+            #web_file.write('<a href="#" rel="item=' + str(mount) + '">a</a>');
+        #web_file.write('</html>')
+    #achievements
     achi_filename = open("achievements.json")
     achi_tree = json.load(achi_filename)
     achi_filename.close()
     achievement_tree = []
+    #loop thru all ahchievements available
     for main_categories in achi_tree['achievements']:
         #skip feast of strenght
         if main_categories['id'] == 81:
@@ -254,5 +300,6 @@ if __name__=="__main__":
         iterate_tree(main_category,main_categories['achievements'],earned)
         achievement_tree.append(main_category)
     pprint(achievement_tree)
-    print "Account Wide Points Missing: %d" % points
+    print "Account Wide Points Missing: %d" % points_left
+    print "Account Wide Points: %d" % points
 
